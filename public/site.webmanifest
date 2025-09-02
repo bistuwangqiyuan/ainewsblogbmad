@@ -1,0 +1,16 @@
+{
+  "name": "AI新闻博客",
+  "short_name": "AI新闻",
+  "description": "连接AI技术与新闻资讯，提供智能化的内容发现和社区交流平台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

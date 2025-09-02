@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="登录 / 注册">
+  <section>
+    <h1 class="text-2xl mb-4">登录 / 注册</h1>
+    <form id="auth-form" class="flex flex-col gap-2 max-w-md">
+      <input id="email" type="email" placeholder="邮箱" required class="px-2 py-1 text-black" />
+      <input id="password" type="password" placeholder="密码" required class="px-2 py-1 text-black" />
+      <div class="flex gap-2">
+        <button type="button" id="btn-login" class="px-3 py-1 bg-white/10 rounded">登录</button>
+        <button type="button" id="btn-register" class="px-3 py-1 bg-white/10 rounded">注册</button>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    import { getSupabaseClient } from '../lib/supabaseClient.js';
+    const supabase = getSupabaseClient();
+
+    async function ensureProfile(user) {
+      const { data } = await supabase.from('profiles').select('id').eq('id', user.id).single();
+      if (!data) {
+        await supabase.from('profiles').insert({ id: user.id, username: user.email.split('@')[0] });
+      }
+    }
+
+    async function dailyLogin() {
+      try { await supabase.rpc('fn_daily_login'); } catch (_) {}
+    }
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return alert('登录失败：' + error.message);
+      await ensureProfile(data.user);
+      await dailyLogin();
+      alert('登录成功');
+      location.href = '/';
+    });
+
+    document.getElementById('btn-register').addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) return alert('注册失败：' + error.message);
+      if (data.user) {
+        await ensureProfile(data.user);
+      }
+      alert('注册成功，请登录');
+    });
+  </script>
+</Layout>

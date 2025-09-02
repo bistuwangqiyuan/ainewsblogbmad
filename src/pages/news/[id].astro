@@ -1,0 +1,117 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
+---
+
+<Layout title="新闻详情">
+    <section id="detail"></section>
+    <section class="mt-6">
+        <h2 class="text-xl mb-2">评论</h2>
+        <div id="comments" class="space-y-3"></div>
+        <form id="comment-form" class="mt-3 flex gap-2">
+            <input id="comment-input" placeholder="写下你的评论" class="flex-1 px-2 py-1 text-black" />
+            <button class="px-3 py-1 bg-white/10 rounded" type="submit">发表</button>
+        </form>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../../lib/supabaseClient.js';
+
+        const supabase = getSupabaseClient();
+        const id = location.pathname.split('/').pop();
+        let liked = false;
+
+        async function checkLiked() {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) return false;
+            const { data } = await supabase.from('likes').select('id').eq('entity_type', 'news').eq('entity_id', id).eq('user_id', user.id).limit(1);
+            liked = !!(data && data.length);
+            const btn = document.getElementById('btn-like');
+            if (btn) btn.textContent = liked ? '取消点赞' : '点赞';
+            return liked;
+        }
+
+        async function loadDetail() {
+            const { data, error } = await supabase.from('news_items').select('*').eq('id', id).single();
+            if (error) {
+                alert('加载失败：' + error.message);
+                return;
+            }
+            document.getElementById('detail').innerHTML = `
+        <h1 class="text-2xl mb-2">${data.title}</h1>
+        <div class="opacity-80 mb-2">来源：${data.source} · 时间：${data.published_at ? new Date(data.published_at).toLocaleString() : ''}</div>
+        <div class="flex gap-2 mb-4">
+          <a href="${data.url}" target="_blank" class="px-3 py-1 bg-white/10 rounded">访问来源</a>
+          <button id="btn-like" class="px-3 py-1 bg-white/10 rounded">点赞</button>
+          <button id="btn-fav" class="px-3 py-1 bg-white/10 rounded">收藏</button>
+          <button id="btn-report" class="px-3 py-1 bg-white/10 rounded">举报</button>
+        </div>
+        ${data.content_html ? `<div class="prose prose-invert">${data.content_html}</div>` : ''}
+      `;
+            await supabase.rpc('fn_increment_view', { p_entity_type: 'news', p_entity_id: id }).catch(() => {});
+            await checkLiked();
+            bindActions();
+        }
+
+        async function loadComments() {
+            const { data, error } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('entity_type', 'news')
+                .eq('entity_id', id)
+                .order('created_at', { ascending: false });
+            if (error) {
+                alert('评论加载失败：' + error.message);
+                return;
+            }
+            const box = document.getElementById('comments');
+            box.innerHTML = data.map((c) => `<div class="p-3 bg-white/5 rounded">${c.content}</div>`).join('');
+        }
+
+        function bindActions() {
+            document.getElementById('btn-like').addEventListener('click', async () => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+                if (!liked) {
+                    const { error } = await supabase.from('likes').insert({ entity_type: 'news', entity_id: id, user_id: user.id });
+                    if (error) return alert('点赞失败：' + error.message);
+                } else {
+                    const { error } = await supabase.from('likes').delete().eq('entity_type', 'news').eq('entity_id', id).eq('user_id', user.id);
+                    if (error) return alert('取消点赞失败：' + error.message);
+                }
+                await checkLiked();
+            });
+            document.getElementById('btn-fav').addEventListener('click', async () => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+                const { error } = await supabase.from('favorites').insert({ entity_type: 'news', entity_id: id, user_id: user.id });
+                if (error) return alert('收藏失败：' + error.message);
+                alert('已收藏');
+            });
+            document.getElementById('btn-report').addEventListener('click', async () => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+                const reason = prompt('请输入举报原因');
+                if (!reason) return;
+                const { error } = await supabase.from('reports').insert({ entity_type: 'news', entity_id: id, user_id: user.id, reason });
+                if (error) return alert('举报失败：' + error.message);
+                alert('已提交举报');
+            });
+            document.getElementById('comment-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+                const v = document.getElementById('comment-input').value.trim();
+                if (!v) return;
+                const { error } = await supabase.from('comments').insert({ entity_type: 'news', entity_id: id, author_id: user.id, content: v });
+                if (error) return alert('发表评论失败：' + error.message);
+                document.getElementById('comment-input').value = '';
+                loadComments();
+            });
+        }
+
+        loadDetail();
+        loadComments();
+    </script>
+</Layout>

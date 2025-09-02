@@ -7,28 +7,180 @@ import Footer from '../components/Footer.astro';
 
 interface Props {
     title: string;
+    description?: string;
+    keywords?: string;
+    image?: string;
+    type?: string;
 }
 
-const { title } = Astro.props;
+const {
+    title,
+    description = 'AI新闻博客 - 连接AI技术与新闻资讯，提供智能化的内容发现和社区交流平台',
+    keywords = 'AI, 人工智能, 新闻, 博客, 社区, 技术, 机器学习, 深度学习',
+    image = '/og-image.jpg',
+    type = 'website'
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.com');
+const siteURL = Astro.site || 'https://example.com';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN" class="scroll-smooth">
     <head>
         <meta charset="UTF-8" />
-        <title>{title}</title>
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="generator" content={Astro.generator} />
+
+        <!-- SEO Meta Tags -->
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={keywords} />
+        <meta name="author" content="AI新闻博客" />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content={type} />
+        <meta property="og:url" content={canonicalURL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={new URL(image, siteURL)} />
+        <meta property="og:site_name" content="AI新闻博客" />
+        <meta property="og:locale" content="zh_CN" />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={canonicalURL} />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={new URL(image, siteURL)} />
+
+        <!-- Canonical URL -->
+        <link rel="canonical" href={canonicalURL} />
+
+        <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="preload" as="font" type="font/woff2" href={interWoff2} crossorigin />
+
+        <!-- Theme Color -->
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="msapplication-TileColor" content="#2563eb" />
+
+        <!-- Scripts -->
+        <script src="/config.js" is:inline></script>
+
+        <!-- Structured Data -->
+        <script
+            type="application/ld+json"
+            set:html={JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'AI新闻博客',
+                description: description,
+                url: siteURL,
+                potentialAction: {
+                    '@type': 'SearchAction',
+                    target: `${siteURL}/search?q={search_term_string}`,
+                    'query-input': 'required name=search_term_string'
+                }
+            })}
+        />
     </head>
-    <body class="antialiased text-white bg-complementary">
-        <div class="flex flex-col min-h-screen px-6 bg-noise sm:px-12">
-            <div class="flex flex-col w-full max-w-5xl mx-auto grow">
-                <Header />
-                <main class="grow"><slot /></main>
-                <Footer />
-            </div>
+    <body class="antialiased bg-gray-50 text-gray-900 font-sans">
+        <!-- Skip to main content for accessibility -->
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">
+            跳转到主要内容
+        </a>
+
+        <div class="flex flex-col min-h-screen">
+            <Header />
+            <main id="main-content" class="flex-1">
+                <slot />
+            </main>
+            <Footer />
         </div>
+
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50 hidden">
+            <div class="h-full bg-blue-600 transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- Back to top button -->
+        <button
+            id="back-to-top"
+            class="fixed bottom-8 right-8 w-12 h-12 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition-all duration-300 opacity-0 invisible z-40"
+            aria-label="回到顶部"
+        >
+            <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+            </svg>
+        </button>
     </body>
 </html>
+
+<script>
+    // Back to top functionality
+    const backToTopButton = document.getElementById('back-to-top');
+
+    if (backToTopButton) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // Loading indicator
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const loadingBar = loadingIndicator?.querySelector('div');
+
+    if (loadingIndicator && loadingBar) {
+        // Show loading on navigation
+        document.addEventListener('astro:page-load', () => {
+            loadingIndicator.classList.remove('hidden');
+            loadingBar.style.width = '100%';
+
+            setTimeout(() => {
+                loadingIndicator.classList.add('hidden');
+                loadingBar.style.width = '0%';
+            }, 500);
+        });
+    }
+
+    // Smooth scroll for anchor links
+    document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        const link = target.closest('a[href^="#"]') as HTMLAnchorElement;
+
+        if (link) {
+            const targetId = link.getAttribute('href')?.slice(1);
+            const targetElement = document.getElementById(targetId || '');
+
+            if (targetElement) {
+                event.preventDefault();
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    });
+</script>

@@ -1,21 +1,269 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ContextAlert from '../components/ContextAlert.astro';
-import Markdown from '../components/Markdown.astro';
 
-const explainer = `
-An Astro website can go way beyond static pages - on the right platform.
+// 模拟数据
+const features = [
+    {
+        icon: '📰',
+        title: 'AI新闻聚合',
+        description: '实时聚合全球AI领域最新资讯、论文和技术动态，让您第一时间了解行业趋势。',
+        link: '/news'
+    },
+    {
+        icon: '👥',
+        title: '社区讨论',
+        description: '与AI爱好者和专业人士交流讨论，分享见解，建立专业人脉网络。',
+        link: '/community'
+    },
+    {
+        icon: '🤖',
+        title: 'AI问答',
+        description: '智能问答系统，为您解答AI相关问题，提供专业的技术支持和建议。',
+        link: '/ask'
+    },
+    {
+        icon: '✍️',
+        title: '内容创作',
+        description: '发布您的AI见解、技术分享和项目展示，与社区共同成长。',
+        link: '/compose'
+    }
+];
 
-Netlify supports not only [Streaming SSR](https://docs.astro.build/en/guides/server-side-rendering/#html-streaming) and fast [Edge Middleware](https://docs.astro.build/en/guides/middleware/), but also [on-demand revalidation](https://www.netlify.com/blog/cache-tags-and-purge-api-on-netlify/) and [stale-while-revalidate](https://www.netlify.com/blog/swr-and-fine-grained-cache-control/). 
-Any page or data can be rebuilt only when needed, without site visitors ever getting a performance hit.
-`;
+const stats = [
+    { label: '注册用户', value: '10K+', icon: '👤' },
+    { label: '文章数量', value: '50K+', icon: '📄' },
+    { label: '问答数量', value: '20K+', icon: '❓' },
+    { label: '活跃社区', value: '100+', icon: '🔥' }
+];
 ---
 
-<Layout title="Welcome to Astro.">
-    <ContextAlert class="mb-8" />
-    <h1 class="mb-10">Netlify Platform Starter for Astro</h1>
-    <Markdown content={explainer} class="mb-10 text-lg" />
-    <p>
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg sm:min-w-64">Read the Docs</a>
-    </p>
+<Layout title="AI新闻博客 - 连接AI技术与新闻资讯">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-50 via-white to-gray-50 py-20 lg:py-32">
+        <div class="container-responsive">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <span class="text-6xl mb-6 block">🤖</span>
+                    <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                        连接<span class="text-blue-600">AI技术</span>与<span class="text-blue-600">新闻资讯</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+                        每日聚合AI领域最新资讯与论文，提供智能化的内容发现和社区交流平台，让您与AI技术前沿保持同步。
+                    </p>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <a href="/news" class="btn btn-primary btn-lg group">
+                        <span class="mr-2">📰</span>
+                        浏览新闻
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                    <a href="/community" class="btn btn-outline btn-lg group">
+                        <span class="mr-2">👥</span>
+                        加入社区
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                    {
+                        stats.map((stat) => (
+                            <div class="text-center">
+                                <div class="text-3xl mb-2">{stat.icon}</div>
+                                <div class="text-2xl font-bold text-gray-900">{stat.value}</div>
+                                <div class="text-sm text-gray-600">{stat.label}</div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container-responsive">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">为什么选择我们？</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">我们致力于为用户提供最优质的AI资讯和社区体验，让技术交流更加便捷高效。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {
+                    features.map((feature) => (
+                        <div class="card text-center group hover:shadow-md transition-all duration-300">
+                            <div class="card-body">
+                                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">{feature.icon}</div>
+                                <h3 class="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
+                                <p class="text-gray-600 mb-6 leading-relaxed">{feature.description}</p>
+                                <a href={feature.link} class="btn btn-primary btn-sm w-full group">
+                                    了解更多
+                                    <svg
+                                        class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Content Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="container-responsive">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">最新内容</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">探索最新的AI资讯、技术讨论和社区动态</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Latest News -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <span class="mr-2">📰</span>
+                            最新新闻
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">OpenAI发布GPT-5预览版</h4>
+                                    <p class="text-sm text-gray-600">重大突破：新的多模态能力...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">Google推出Gemini 2.0</h4>
+                                    <p class="text-sm text-gray-600">性能提升40%，推理能力...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">Meta开源Llama 3</h4>
+                                    <p class="text-sm text-gray-600">700B参数模型，开源...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <a href="/news" class="btn btn-outline w-full">查看全部新闻</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Discussions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <span class="mr-2">🔥</span>
+                            热门讨论
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">如何评估AI模型性能？</h4>
+                                    <p class="text-sm text-gray-600">讨论各种评估指标...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">AI在医疗领域的应用</h4>
+                                    <p class="text-sm text-gray-600">分享实际案例和...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">大模型训练技巧</h4>
+                                    <p class="text-sm text-gray-600">经验分享和最佳...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <a href="/community" class="btn btn-outline w-full">参与讨论</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Q&A -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <span class="mr-2">🤖</span>
+                            AI问答
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">什么是注意力机制？</h4>
+                                    <p class="text-sm text-gray-600">详细解释Transformer...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">如何选择损失函数？</h4>
+                                    <p class="text-sm text-gray-600">不同场景下的选择...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-1">模型部署最佳实践</h4>
+                                    <p class="text-sm text-gray-600">生产环境部署...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <a href="/ask" class="btn btn-outline w-full">提问或搜索</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-blue-600">
+        <div class="container-responsive">
+            <div class="text-center text-white">
+                <h2 class="text-3xl lg:text-4xl font-bold mb-4">加入我们的AI社区</h2>
+                <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">与全球AI爱好者和专业人士一起，探索AI技术的无限可能</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/auth" class="btn bg-white text-blue-600 hover:bg-gray-100 btn-lg">
+                        <span class="mr-2">🚀</span>
+                        立即注册
+                    </a>
+                    <a href="/intro" class="btn btn-outline border-white text-white hover:bg-white hover:text-blue-600 btn-lg">
+                        <span class="mr-2">📖</span>
+                        了解更多
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 </Layout>

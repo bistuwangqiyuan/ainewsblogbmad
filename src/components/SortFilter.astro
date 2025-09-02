@@ -1,0 +1,70 @@
+---
+interface Props {
+    sortOptions: { value: string; label: string }[];
+    filterOptions: { value: string; label: string }[];
+    currentSort: string;
+    currentFilter: string;
+}
+
+const { sortOptions, filterOptions, currentSort, currentFilter } = Astro.props;
+---
+
+<div class="flex flex-wrap gap-4 mb-6 p-4 bg-white/5 rounded-lg">
+    <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-300">排序:</label>
+        <select id="sort-select" class="px-3 py-1 bg-white/10 rounded text-sm">
+            {sortOptions.map(option => (
+                <option value={option.value} selected={option.value === currentSort}>
+                    {option.label}
+                </option>
+            ))}
+        </select>
+    </div>
+    
+    <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-300">分类:</label>
+        <select id="filter-select" class="px-3 py-1 bg-white/10 rounded text-sm">
+            <option value="">全部</option>
+            {filterOptions.map(option => (
+                <option value={option.value} selected={option.value === currentFilter}>
+                    {option.label}
+                </option>
+            ))}
+        </select>
+    </div>
+    
+    <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-300">搜索:</label>
+        <input 
+            type="text" 
+            id="search-input" 
+            placeholder="搜索标题或内容..." 
+            class="px-3 py-1 bg-white/10 rounded text-sm min-w-[200px]"
+        />
+    </div>
+</div>
+
+<script>
+    // 排序和筛选逻辑
+    document.addEventListener('DOMContentLoaded', () => {
+        const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+        const filterSelect = document.getElementById('filter-select') as HTMLSelectElement;
+        const searchInput = document.getElementById('search-input') as HTMLInputElement;
+        
+        function updateFilters() {
+            const sort = sortSelect.value;
+            const filter = filterSelect.value;
+            const search = searchInput.value;
+            
+            // 触发自定义事件
+            const event = new CustomEvent('filterChange', {
+                detail: { sort, filter, search }
+            });
+            document.dispatchEvent(event);
+        }
+        
+        sortSelect?.addEventListener('change', updateFilters);
+        filterSelect?.addEventListener('change', updateFilters);
+        searchInput?.addEventListener('input', updateFilters);
+    });
+</script>

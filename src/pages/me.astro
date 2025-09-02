@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="个人中心">
+    <section>
+        <h1 class="text-2xl mb-4">个人中心</h1>
+        <div id="profile" class="p-4 bg-white/5 rounded mb-4"></div>
+        <div class="grid gap-4 md:grid-cols-2">
+            <div>
+                <h2 class="text-xl mb-2">积分记录</h2>
+                <div id="points" class="space-y-2"></div>
+            </div>
+            <div>
+                <h2 class="text-xl mb-2">统计</h2>
+                <div id="stats" class="space-y-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../lib/supabaseClient.js';
+        const supabase = getSupabaseClient();
+
+        async function loadProfile() {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) {
+                document.getElementById('profile').textContent = '请先登录';
+                return;
+            }
+            const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            document.getElementById('profile').innerHTML = `
+        <div>用户名：${p?.username || ''}</div>
+        <div>积分：${p?.points ?? 0}</div>
+        <div>等级：${p?.level ?? 1}</div>
+      `;
+        }
+
+        async function loadPoints() {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) return;
+            const { data } = await supabase.from('points_log').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+            document.getElementById('points').innerHTML = (data || [])
+                .map((r) => `<div class="p-2 bg-white/5 rounded text-sm">${r.created_at} · ${r.action}：${r.delta > 0 ? '+' : ''}${r.delta}</div>`)
+                .join('');
+        }
+
+        async function loadStats() {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) return;
+            const [{ count: posts }] = [await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('author_id', user.id)];
+            const [{ count: comments }] = [await supabase.from('comments').select('*', { count: 'exact', head: true }).eq('author_id', user.id)];
+            const [{ count: favs }] = [await supabase.from('favorites').select('*', { count: 'exact', head: true }).eq('user_id', user.id)];
+            document.getElementById('stats').innerHTML = `
+        <div class="p-2 bg-white/5 rounded">发帖/提问：${posts?.count ?? 0}</div>
+        <div class="p-2 bg-white/5 rounded">评论：${comments?.count ?? 0}</div>
+        <div class="p-2 bg-white/5 rounded">收藏：${favs?.count ?? 0}</div>
+      `;
+        }
+
+        loadProfile();
+        loadPoints();
+        loadStats();
+    </script>
+</Layout>

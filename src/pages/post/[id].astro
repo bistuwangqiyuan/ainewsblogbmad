@@ -1,0 +1,311 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostDetail from '../../components/PostDetail.astro';
+import MediaGallery from '../../components/MediaGallery.astro';
+import PostEditForm from '../../components/PostEditForm.astro';
+
+export const prerender = false;
+---
+
+<Layout title="帖子 / 问题 详情">
+    <div id="post-detail-container">
+        <!-- 帖子详情将通过JavaScript动态加载 -->
+    </div>
+
+    <!-- 问答部分 -->
+    <section id="answers" class="mt-6 hidden max-w-4xl mx-auto">
+        <h2 class="text-xl font-bold mb-4">回答</h2>
+        <div id="answer-list" class="space-y-4">
+            <!-- 回答列表将通过JavaScript动态加载 -->
+        </div>
+        <form id="answer-form" class="mt-6 p-4 bg-white/5 rounded-lg">
+            <textarea
+                id="answer-input"
+                class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-vertical"
+                rows="4"
+                placeholder="写下你的回答..."></textarea>
+            <div class="flex justify-end mt-3">
+                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white transition-colors" type="submit"> 提交回答 </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- 评论部分 -->
+    <section class="mt-6 max-w-4xl mx-auto">
+        <h2 class="text-xl font-bold mb-4">评论</h2>
+        <div id="comments" class="space-y-4">
+            <!-- 评论列表将通过JavaScript动态加载 -->
+        </div>
+        <form id="comment-form" class="mt-6 p-4 bg-white/5 rounded-lg">
+            <div class="flex gap-3">
+                <input
+                    id="comment-input"
+                    placeholder="写下你的评论..."
+                    class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                />
+                <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white transition-colors" type="submit"> 发表 </button>
+            </div>
+        </form>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../../lib/supabaseClient.js';
+        const supabase = getSupabaseClient();
+        const id = location.pathname.split('/').pop();
+        let liked = false;
+        let currentPost = null;
+
+        async function checkLiked() {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) return false;
+            const { data } = await supabase.from('likes').select('id').eq('entity_type', 'post').eq('entity_id', id).eq('user_id', user.id).limit(1);
+            liked = !!(data && data.length);
+            return liked;
+        }
+
+        async function loadDetail() {
+            try {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .select(
+                        `
+                        *,
+                        author:profiles(id, username, avatar_url, level),
+                        like_count,
+                        comment_count,
+                        view_count
+                    `
+                    )
+                    .eq('id', id)
+                    .single();
+
+                if (error) {
+                    console.error('加载失败:', error);
+                    alert('加载失败：' + error.message);
+                    return;
+                }
+
+                currentPost = data;
+
+                // 检查当前用户是否为作者
+                const user = (await supabase.auth.getUser()).data.user;
+                const isAuthor = user && data.author_id === user.id;
+
+                // 更新浏览量
+                await supabase.from('views').insert({
+                    entity_type: 'post',
+                    entity_id: id,
+                    viewer_id: user?.id
+                });
+
+                // 渲染帖子详情
+                const container = document.getElementById('post-detail-container');
+                if (container) {
+                    container.innerHTML = `
+                        <PostDetail 
+                            id="${data.id}"
+                            type="${data.type}"
+                            title="${data.title}"
+                            content="${data.content}"
+                            author='${JSON.stringify(data.author)}'
+                            createdAt="${data.created_at}"
+                            updatedAt="${data.updated_at || ''}"
+                            media='${JSON.stringify(data.media || [])}'
+                            likeCount="${data.like_count || 0}"
+                            commentCount="${data.comment_count || 0}"
+                            viewCount="${data.view_count || 0}"
+                            isAuthor="${isAuthor}"
+                        />
+                        
+                        ${
+                            data.media && data.media.length > 0
+                                ? `
+                            <MediaGallery media='${JSON.stringify(data.media)}' />
+                        `
+                                : ''
+                        }
+                        
+                        <PostEditForm 
+                            id="${data.id}"
+                            type="${data.type}"
+                            title="${data.title}"
+                            content="${data.content}"
+                            media='${JSON.stringify(data.media || [])}'
+                            category="${data.category || ''}"
+                        />
+                    `;
+                }
+
+                if (data.type === 'question') {
+                    document.getElementById('answers').classList.remove('hidden');
+                    loadAnswers();
+                }
+
+                await checkLiked();
+                bindActions(data);
+            } catch (error) {
+                console.error('加载详情失败:', error);
+                alert('加载失败，请稍后重试');
+            }
+        }
+
+        async function loadAnswers() {
+            const { data, error } = await supabase.from('answers').select('*').eq('question_id', id).order('created_at', { ascending: false });
+            if (error) return alert('加载回答失败：' + error.message);
+            document.getElementById('answer-list').innerHTML = data.map((a) => `<div class="p-3 bg-white/5 rounded">${a.content}</div>`).join('');
+        }
+
+        async function loadComments() {
+            const { data, error } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('entity_type', 'post')
+                .eq('entity_id', id)
+                .order('created_at', { ascending: false });
+            if (error) return alert('评论加载失败：' + error.message);
+            document.getElementById('comments').innerHTML = data.map((c) => `<div class="p-3 bg-white/5 rounded">${c.content}</div>`).join('');
+        }
+
+        function bindActions(post) {
+            // 监听自定义事件
+            document.addEventListener('postLike', async (event) => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                if (!liked) {
+                    const { error } = await supabase.from('likes').insert({
+                        entity_type: 'post',
+                        entity_id: id,
+                        user_id: user.id
+                    });
+                    if (error) return alert('点赞失败：' + error.message);
+                } else {
+                    const { error } = await supabase.from('likes').delete().eq('entity_type', 'post').eq('entity_id', id).eq('user_id', user.id);
+                    if (error) return alert('取消点赞失败：' + error.message);
+                }
+
+                liked = !liked;
+                await loadDetail(); // 重新加载以更新计数
+            });
+
+            document.addEventListener('postFavorite', async (event) => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                const { error } = await supabase.from('favorites').insert({
+                    entity_type: 'post',
+                    entity_id: id,
+                    user_id: user.id
+                });
+                if (error) return alert('收藏失败：' + error.message);
+                alert('已收藏');
+            });
+
+            document.addEventListener('postReport', async (event) => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                const customEvent = event as CustomEvent;
+                const reason = customEvent.detail.reason;
+                if (!reason) return;
+
+                const { error } = await supabase.from('reports').insert({
+                    entity_type: 'post',
+                    entity_id: id,
+                    user_id: user.id,
+                    reason
+                });
+                if (error) return alert('举报失败：' + error.message);
+                alert('已提交举报');
+            });
+
+            document.addEventListener('postEdit', (event) => {
+                // 显示编辑表单
+                if ((window as any).showEditForm) {
+                    (window as any).showEditForm();
+                }
+            });
+
+            document.addEventListener('postDelete', async (event) => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                const { error } = await supabase.from('posts').delete().eq('id', id);
+                if (error) return alert('删除失败：' + error.message);
+
+                alert('删除成功');
+                window.location.href = '/community';
+            });
+
+            document.addEventListener('postUpdate', async (event) => {
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                const customEvent = event as CustomEvent;
+                const { data } = customEvent.detail;
+                const { error } = await supabase
+                    .from('posts')
+                    .update({
+                        title: data.title,
+                        content: data.content,
+                        category: data.category,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', id);
+
+                if (error) return alert('更新失败：' + error.message);
+
+                alert('更新成功');
+                await loadDetail(); // 重新加载
+            });
+
+            // 评论表单
+            document.getElementById('comment-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = (await supabase.auth.getUser()).data.user;
+                if (!user) return alert('请先登录');
+
+                const commentInput = document.getElementById('comment-input') as HTMLInputElement;
+                const content = commentInput.value.trim();
+                if (!content) return;
+
+                const { error } = await supabase.from('comments').insert({
+                    entity_type: 'post',
+                    entity_id: id,
+                    author_id: user.id,
+                    content
+                });
+                if (error) return alert('发表评论失败：' + error.message);
+
+                commentInput.value = '';
+                loadComments();
+            });
+
+            // 回答表单（仅问答类型）
+            if (post.type === 'question') {
+                document.getElementById('answer-form')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const user = (await supabase.auth.getUser()).data.user;
+                    if (!user) return alert('请先登录');
+
+                    const answerInput = document.getElementById('answer-input') as HTMLTextAreaElement;
+                    const content = answerInput.value.trim();
+                    if (!content) return;
+
+                    const { error } = await supabase.from('answers').insert({
+                        question_id: id,
+                        author_id: user.id,
+                        content
+                    });
+                    if (error) return alert('提交回答失败：' + error.message);
+
+                    answerInput.value = '';
+                    loadAnswers();
+                });
+            }
+        }
+
+        loadDetail();
+        loadComments();
+    </script>
+</Layout>

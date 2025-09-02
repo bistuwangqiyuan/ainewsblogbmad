@@ -1,0 +1,71 @@
+---
+interface Props {
+    tabs: string[];
+    activeTab: string;
+}
+
+const { tabs, activeTab } = Astro.props;
+---
+
+<div class="tab-panel" data-active-tab={activeTab}>
+    <div class="flex gap-2 mb-6 border-b border-white/10">
+        {tabs.map((tab) => (
+            <button 
+                class="tab-button px-4 py-2 text-sm font-medium rounded-t-lg transition-colors"
+                data-tab={tab}
+                data-active={tab === activeTab}
+            >
+                {tab}
+            </button>
+        ))}
+    </div>
+    <div class="tab-content">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .tab-button[data-active="true"] {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border-bottom: 2px solid #3b82f6;
+    }
+    
+    .tab-button[data-active="false"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #d1d5db;
+    }
+    
+    .tab-button[data-active="false"]:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+</style>
+
+<script>
+    // Tab切换逻辑
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabPanels = document.querySelectorAll('.tab-panel');
+        
+        tabPanels.forEach(panel => {
+            const buttons = panel.querySelectorAll('.tab-button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // 移除所有active状态
+                    buttons.forEach(btn => {
+                        btn.setAttribute('data-active', 'false');
+                    });
+                    
+                    // 设置当前按钮为active
+                    button.setAttribute('data-active', 'true');
+                    
+                    // 触发自定义事件
+                    const event = new CustomEvent('tabChange', {
+                        detail: { tab: button.getAttribute('data-tab') }
+                    });
+                    panel.dispatchEvent(event);
+                });
+            });
+        });
+    });
+</script>

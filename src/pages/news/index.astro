@@ -1,0 +1,120 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="AI 编程新闻">
+    <section class="mb-6">
+        <h1 class="text-2xl mb-4">AI 编程新闻</h1>
+        <div class="mb-4">
+            <form id="filters" class="flex flex-wrap gap-2 items-center">
+                <input name="q" placeholder="关键词" class="px-2 py-1 text-black" />
+                <input name="from" type="date" class="px-2 py-1 text-black" />
+                <input name="to" type="date" class="px-2 py-1 text-black" />
+                <input name="source" placeholder="来源（多项用逗号分隔）" class="px-2 py-1 text-black" />
+                <select name="sort" class="px-2 py-1 text-black">
+                    <option value="time">按时间</option>
+                </select>
+                <button type="submit" class="px-3 py-1 bg-white/10 rounded">筛选</button>
+                <button type="button" id="clear" class="px-3 py-1 bg-white/10 rounded">清空</button>
+            </form>
+        </div>
+        <div id="list" class="grid gap-4"></div>
+        <div class="flex items-center gap-2 mt-6">
+            <button id="prev" class="px-3 py-1 bg-white/10 rounded">上一页</button>
+            <span id="page">1</span>
+            <button id="next" class="px-3 py-1 bg-white/10 rounded">下一页</button>
+        </div>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../../lib/supabaseClient.js';
+
+        const PAGE_SIZE = 20;
+        let currentPage = 1;
+
+        function parseSources(raw) {
+            if (!raw) return [];
+            return raw
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean);
+        }
+
+        async function queryNews(page = 1) {
+            const supabase = getSupabaseClient();
+            const params = new URLSearchParams(location.search);
+            const q = params.get('q') || '';
+            const from = params.get('from');
+            const to = params.get('to');
+            const source = params.get('source') || '';
+            const sort = params.get('sort') || 'time';
+
+            let query = supabase.from('news_items').select('*', { count: 'exact' });
+            if (q) query = query.ilike('title', `%${q}%`);
+            const sources = parseSources(source);
+            if (sources.length) query = query.in('source', sources);
+            if (from) query = query.gte('published_at', from);
+            if (to) query = query.lte('published_at', to + ' 23:59:59');
+            if (sort === 'time') query = query.order('published_at', { ascending: false });
+
+            const fromIdx = (page - 1) * PAGE_SIZE;
+            const toIdx = fromIdx + PAGE_SIZE - 1;
+            const { data, error, count } = await query.range(fromIdx, toIdx);
+            if (error) {
+                alert('加载失败：' + error.message);
+                return { data: [], count: 0 };
+            }
+            return { data, count };
+        }
+
+        function render(list, items) {
+            if (!items.length) {
+                list.innerHTML = '<div class="opacity-80">暂无数据，请调整筛选条件。</div>';
+                return;
+            }
+            list.innerHTML = items
+                .map(
+                    (item) => `
+        <article class="p-4 bg-white/5 rounded">
+          <a href="/news/${item.id}" class="text-xl hover:underline">${item.title}</a>
+          <div class="text-sm opacity-80 mt-1">来源：${item.source} · 时间：${item.published_at ? new Date(item.published_at).toLocaleString() : ''}</div>
+        </article>
+      `
+                )
+                .join('');
+        }
+
+        async function load(page = 1) {
+            const list = document.getElementById('list');
+            const pageEl = document.getElementById('page');
+            const { data, count } = await queryNews(page);
+            render(list, data);
+            pageEl.textContent = String(page);
+            currentPage = page;
+            document.getElementById('prev').disabled = page <= 1;
+            const maxPage = Math.max(1, Math.ceil((count || 0) / PAGE_SIZE));
+            document.getElementById('next').disabled = page >= maxPage;
+        }
+
+        document.getElementById('filters').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            const p = new URLSearchParams();
+            for (const [k, v] of fd.entries()) {
+                if (v) p.set(k, v);
+            }
+            history.replaceState(null, '', '?' + p.toString());
+            load(1);
+        });
+
+        document.getElementById('clear').addEventListener('click', () => {
+            history.replaceState(null, '', location.pathname);
+            load(1);
+        });
+
+        document.getElementById('prev').addEventListener('click', () => load(currentPage - 1));
+        document.getElementById('next').addEventListener('click', () => load(currentPage + 1));
+
+        load(1);
+    </script>
+</Layout>

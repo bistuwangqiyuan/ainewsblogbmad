@@ -1,0 +1,201 @@
+---
+interface Props {
+    type: 'post' | 'question';
+    title: string;
+    content: string;
+    author: string;
+    createdAt: string;
+    likeCount: number;
+    commentCount: number;
+    id: string;
+    tags?: string[];
+    isLiked?: boolean;
+}
+
+const { type, title, content, author, createdAt, likeCount, commentCount, id, tags = [], isLiked = false } = Astro.props;
+
+// 格式化时间
+const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 1) {
+        return '刚刚';
+    } else if (diffInHours < 24) {
+        return `${Math.floor(diffInHours)}小时前`;
+    } else if (diffInHours < 24 * 7) {
+        return `${Math.floor(diffInHours / 24)}天前`;
+    } else {
+        return date.toLocaleDateString('zh-CN');
+    }
+};
+
+// 获取作者头像
+const getAuthorAvatar = (authorName: string) => {
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500', 'bg-gray-500'];
+    const colorIndex = authorName.charCodeAt(0) % colors.length;
+    return colors[colorIndex];
+};
+---
+
+<article class="card group hover:shadow-md transition-all duration-300 animate-fade-in">
+    <div class="card-body">
+        <div class="flex items-start gap-4">
+            <!-- 作者头像 -->
+            <div class="flex-shrink-0">
+                <div class={`w-12 h-12 ${getAuthorAvatar(author)} rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-sm`}>
+                    {author.charAt(0).toUpperCase()}
+                </div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="flex-1 min-w-0">
+                <!-- 标题和类型标签 -->
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        <a href={`/post/${id}`} class="hover:underline">
+                            {title}
+                        </a>
+                    </h3>
+                    {
+                        type === 'question' && (
+                            <span class="badge badge-warning flex-shrink-0">
+                                <span class="mr-1">🤖</span>
+                                问答
+                            </span>
+                        )
+                    }
+                </div>
+
+                <!-- 内容预览 -->
+                <p class="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                    {content.length > 150 ? content.slice(0, 150) + '...' : content}
+                </p>
+
+                <!-- 标签 -->
+                {
+                    tags.length > 0 && (
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {tags.slice(0, 3).map((tag) => (
+                                <span class="badge badge-secondary text-xs">#{tag}</span>
+                            ))}
+                            {tags.length > 3 && <span class="text-xs text-gray-500">+{tags.length - 3}个标签</span>}
+                        </div>
+                    )
+                }
+
+                <!-- 底部信息 -->
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-4 text-gray-500">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                            {author}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            {formatTime(createdAt)}
+                        </span>
+                    </div>
+
+                    <!-- 互动统计 -->
+                    <div class="flex items-center gap-4">
+                        <button
+                            class="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition-colors group/btn"
+                            data-post-id={id}
+                            data-action="like"
+                        >
+                            <svg
+                                class={`w-4 h-4 transition-colors ${isLiked ? 'text-blue-600 fill-current' : 'group-hover/btn:text-blue-600'}`}
+                                fill={isLiked ? 'currentColor' : 'none'}
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                ></path>
+                            </svg>
+                            <span class={isLiked ? 'text-blue-600 font-medium' : ''}>
+                                {likeCount}
+                            </span>
+                        </button>
+
+                        <a href={`/post/${id}#comments`} class="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                ></path>
+                            </svg>
+                            <span>{commentCount}</span>
+                        </a>
+
+                        <button class="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition-colors" title="分享">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<style>
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+<script>
+    // 点赞功能
+    document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement;
+        const button = target.closest('[data-action="like"]') as HTMLButtonElement;
+
+        if (button) {
+            const postId = button.dataset.postId;
+            const likeCount = button.querySelector('span:last-child');
+            const icon = button.querySelector('svg');
+
+            if (postId && likeCount && icon) {
+                // 切换点赞状态
+                const isLiked = icon.classList.contains('text-blue-600');
+
+                if (isLiked) {
+                    icon.classList.remove('text-blue-600', 'fill-current');
+                    likeCount.classList.remove('text-blue-600', 'font-medium');
+                    likeCount.textContent = String(parseInt(likeCount.textContent || '0') - 1);
+                } else {
+                    icon.classList.add('text-blue-600', 'fill-current');
+                    likeCount.classList.add('text-blue-600', 'font-medium');
+                    likeCount.textContent = String(parseInt(likeCount.textContent || '0') + 1);
+                }
+
+                // 这里可以添加实际的API调用
+                console.log(`${isLiked ? '取消点赞' : '点赞'} 帖子 ${postId}`);
+            }
+        }
+    });
+</script>

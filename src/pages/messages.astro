@@ -1,0 +1,114 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="站内消息">
+    <section>
+        <h1 class="text-2xl mb-4">站内消息</h1>
+        <div class="grid gap-4 md:grid-cols-2">
+            <div>
+                <h2 class="text-xl mb-2">对话</h2>
+                <div id="list" class="space-y-2"></div>
+            </div>
+            <div>
+                <h2 class="text-xl mb-2">系统通知</h2>
+                <div id="ntf-list" class="space-y-2"></div>
+            </div>
+        </div>
+        <div class="mt-8">
+            <h2 class="text-xl mb-2">发送消息</h2>
+            <form id="form" class="flex flex-col gap-2">
+                <input id="to" placeholder="对方用户ID" class="px-2 py-1 text-black" />
+                <textarea id="content" placeholder="消息内容" class="px-2 py-1 text-black"></textarea>
+                <button class="px-3 py-1 bg-white/10 rounded">发送</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../lib/supabaseClient.js';
+        const supabase = getSupabaseClient();
+        let currentUser = null;
+
+        async function loadUser() {
+            currentUser = (await supabase.auth.getUser()).data.user;
+            return currentUser;
+        }
+
+        async function loadMessages() {
+            const user = await loadUser();
+            if (!user) return;
+            const { data, error } = await supabase
+                .from('messages')
+                .select('*')
+                .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+                .order('created_at', { ascending: false });
+            if (error) return alert('加载失败：' + error.message);
+            document.getElementById('list').innerHTML = data
+                .map((m) => {
+                    const isReceiver = m.receiver_id === user.id;
+                    const readTag = m.read ? '' : '· 未读';
+                    const readBtn = isReceiver && !m.read ? `<button data-id="${m.id}" class="px-2 py-1 bg-white/10 rounded msg-read">标记已读</button>` : '';
+                    return `<div class="p-2 bg-white/5 rounded text-sm flex items-center justify-between">
+                    <div>
+                        <div>${m.sender_id === user.id ? '我 → ' + m.receiver_id : m.sender_id + ' → 我'}</div>
+                        <div class="opacity-90">${m.content}</div>
+                        <div class="opacity-60 text-xs">${new Date(m.created_at).toLocaleString()} ${readTag}</div>
+                    </div>
+                    ${readBtn}
+                </div>`;
+                })
+                .join('');
+            document.querySelectorAll('.msg-read').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+                    const { error } = await supabase.from('messages').update({ read: true }).eq('id', id);
+                    if (error) return alert('标记已读失败：' + error.message);
+                    loadMessages();
+                });
+            });
+        }
+
+        async function loadNotifications() {
+            const user = await loadUser();
+            if (!user) return;
+            const { data, error } = await supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+            if (error) return alert('通知加载失败：' + error.message);
+            document.getElementById('ntf-list').innerHTML = data
+                .map(
+                    (n) => `<div class="p-2 bg-white/5 rounded text-sm flex items-center justify-between">
+                <div>
+                    <div>${n.type}</div>
+                    <div class="opacity-80 text-xs">${new Date(n.created_at).toLocaleString()} ${n.read ? '' : '· 未读'}</div>
+                </div>
+                ${n.read ? '' : `<button data-id="${n.id}" class="px-2 py-1 bg-white/10 rounded ntf-read">标记已读</button>`}
+            </div>`
+                )
+                .join('');
+            document.querySelectorAll('.ntf-read').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+                    const { error } = await supabase.from('notifications').update({ read: true }).eq('id', id);
+                    if (error) return alert('标记已读失败：' + error.message);
+                    loadNotifications();
+                });
+            });
+        }
+
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = await loadUser();
+            if (!user) return alert('请先登录');
+            const to = document.getElementById('to').value.trim();
+            const content = document.getElementById('content').value.trim();
+            if (!to || !content) return;
+            const { error } = await supabase.from('messages').insert({ sender_id: user.id, receiver_id: to, content });
+            if (error) return alert('发送失败：' + error.message);
+            document.getElementById('content').value = '';
+            loadMessages();
+        });
+
+        loadMessages();
+        loadNotifications();
+    </script>
+</Layout>

@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="发帖 / 提问">
+  <section>
+    <h1 class="text-2xl mb-4">发帖 / 提问</h1>
+    <form id="form" class="flex flex-col gap-3 max-w-2xl">
+      <select id="type" class="px-2 py-1 text-black">
+        <option value="post">论坛帖</option>
+        <option value="question">问题</option>
+      </select>
+      <input id="title" placeholder="标题" required class="px-2 py-1 text-black" />
+      <textarea id="content" placeholder="内容" required rows="6" class="px-2 py-1 text-black"></textarea>
+      <input id="media" type="file" multiple accept="image/png,image/jpeg,image/webp,video/mp4" class="text-sm" />
+      <button class="px-3 py-1 bg-white/10 rounded">发布</button>
+    </form>
+  </section>
+
+  <script>
+    import { getSupabaseClient } from '../lib/supabaseClient.js';
+    const supabase = getSupabaseClient();
+
+    const MAX_FILES = 5;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+    async function precheckSensitive(text) {
+      try {
+        const { data, error } = await supabase.rpc('fn_check_sensitive', { p_text: text });
+        if (error) return { ok: false, msg: error.message };
+        return { ok: !!data };
+      } catch (e) {
+        return { ok: true }; // 仅预检，最终由触发器强校验
+      }
+    }
+
+    async function uploadFiles(files) {
+      if (!files || !files.length) return [];
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error('请先登录');
+      const bucket = supabase.storage.from('media');
+      const uploaded = [];
+      const now = new Date();
+      for (let i = 0; i < Math.min(files.length, MAX_FILES); i++) {
+        const f = files[i];
+        if (f.size > MAX_SIZE) throw new Error('文件过大，需小于 10MB');
+        const okTypes = ['image/png','image/jpeg','image/webp','video/mp4'];
+        if (!okTypes.includes(f.type)) throw new Error('不支持的文件类型');
+        const path = `user/${user.id}/${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${Date.now()}-${encodeURIComponent(f.name)}`;
+        const { data, error } = await bucket.upload(path, f, { upsert: false });
+        if (error) throw new Error('上传失败：' + error.message);
+        const { data: pub } = bucket.getPublicUrl(path);
+        uploaded.push({ path, url: pub.publicUrl, type: f.type });
+      }
+      return uploaded;
+    }
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) return alert('请先登录');
+      const type = document.getElementById('type').value;
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      if (!title || !content) return;
+      const pre = await precheckSensitive(title + '\n' + content);
+      if (!pre.ok) return alert('内容包含敏感词，请修改后再试');
+      let media = [];
+      try {
+        const files = document.getElementById('media').files;
+        media = await uploadFiles(files);
+      } catch (err) {
+        return alert(err.message);
+      }
+      const { data, error } = await supabase.from('posts').insert({ author_id: user.id, type, title, content, media });
+      if (error) return alert('发布失败：' + error.message);
+      alert('发布成功');
+      location.href = '/community';
+    });
+  </script>
+</Layout>

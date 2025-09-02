@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="AI 专家问答">
+    <section>
+        <h1 class="text-2xl mb-4">AI 专家问答</h1>
+        <form id="form" class="flex flex-col gap-3 max-w-2xl">
+            <textarea id="q" rows="6" class="px-2 py-1 text-black" placeholder="请输入你的问题（公开展示）"></textarea>
+            <div class="flex gap-2">
+                <button id="btn-submit" class="px-3 py-1 bg-white/10 rounded" type="submit">提交</button>
+                <button id="btn-retry" class="px-3 py-1 bg-white/10 rounded" type="button" disabled>重试</button>
+            </div>
+        </form>
+        <div id="answer" class="mt-4 p-3 bg-white/5 rounded whitespace-pre-wrap"></div>
+    </section>
+
+    <script>
+        import { getSupabaseClient } from '../lib/supabaseClient.js';
+        import { formatAiError } from '../lib/ai.js';
+        const supabase = getSupabaseClient();
+
+        async function callAsk(question) {
+            const user = (await supabase.auth.getUser()).data.user;
+            if (!user) throw new Error('请先登录后提问');
+            const resp = await fetch('/.netlify/functions/ask-ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question, authorId: user.id })
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) throw data || { error: '请求失败' };
+            return data;
+        }
+
+        async function askFlow() {
+            const box = document.getElementById('answer');
+            const qEl = document.getElementById('q');
+            const submitBtn = document.getElementById('btn-submit');
+            const retryBtn = document.getElementById('btn-retry');
+            const q = qEl.value.trim();
+            if (!q) return;
+            box.textContent = '思考中...';
+            submitBtn.disabled = true;
+            retryBtn.disabled = true;
+            try {
+                const { answer, postId } = await callAsk(q);
+                box.innerHTML = `${answer}\n\n已创建问题：<a class="underline" href="/post/${postId}" target="_blank">查看</a>`;
+            } catch (err) {
+                const msg = formatAiError(err?.error || err?.message || err, err?.detail);
+                box.textContent = '失败：' + msg;
+                retryBtn.disabled = false;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            askFlow();
+        });
+        document.getElementById('btn-retry').addEventListener('click', async () => {
+            askFlow();
+        });
+    </script>
+</Layout>
