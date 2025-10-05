@@ -2,7 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="AI 专家问答">
+<Layout 
+    title="AI专家问答 - 智能AI助手在线解答 | AI新闻博客"
+    description="AI专家问答系统，基于先进的大语言模型，为您解答人工智能、机器学习、深度学习等技术问题。提供专业的技术支持、学习指导和最佳实践建议。"
+    keywords="AI问答,人工智能助手,机器学习问答,深度学习教程,AI技术支持,GPT问答,智能助手,AI学习指导,技术咨询"
+    breadcrumbs={[
+        { name: '首页', url: '/' },
+        { name: 'AI问答', url: '/ask' }
+    ]}
+>
     <section>
         <h1 class="text-2xl mb-4">AI 专家问答</h1>
         <form id="form" class="flex flex-col gap-3 max-w-2xl">

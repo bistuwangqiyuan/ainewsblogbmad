@@ -2,7 +2,15 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="AI 编程新闻">
+<Layout 
+    title="AI新闻资讯 - 每日聚合20+顶级AI新闻源 | AI新闻博客"
+    description="实时聚合全球AI领域最新资讯，包括GPT、ChatGPT、机器学习、深度学习、计算机视觉等前沿技术动态。每日更新20+权威AI新闻源，第一时间了解人工智能行业趋势。"
+    keywords="AI新闻,人工智能资讯,GPT新闻,ChatGPT,机器学习新闻,深度学习资讯,AI技术动态,人工智能趋势,AI行业新闻"
+    breadcrumbs={[
+        { name: '首页', url: '/' },
+        { name: 'AI新闻', url: '/news' }
+    ]}
+>
     <section class="mb-6">
         <h1 class="text-2xl mb-4">AI 编程新闻</h1>
         <div class="mb-4">

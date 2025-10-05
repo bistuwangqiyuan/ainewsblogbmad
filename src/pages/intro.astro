@@ -2,9 +2,63 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="网站介绍">
-  <section class="prose prose-invert">
-    <h1>网站介绍</h1>
-    <p>本网站每日聚合 AI 编程相关新闻与论文，并提供论坛与问答功能。</p>
-  </section>
+<Layout
+    title="网站介绍 - AI新闻博客功能与特性 | AI新闻博客"
+    description="了解AI新闻博客的核心功能：每日聚合20+AI新闻源、智能AI问答系统、活跃技术社区、完善的积分等级体系。为AI开发者和研究者提供全方位的资讯和交流服务。"
+    keywords="网站介绍,功能特性,AI资讯平台,新闻聚合,问答系统,技术社区,积分系统"
+>
+    <section class="prose prose-invert max-w-4xl mx-auto">
+        <h1>网站介绍</h1>
+        <p>AI新闻博客是一个集新闻聚合、技术问答、社区讨论于一体的综合性AI资讯平台。</p>
+
+        <h2>核心功能</h2>
+
+        <h3>📰 新闻聚合</h3>
+        <p>每日自动聚合20+顶级AI新闻源，包括：</p>
+        <ul>
+            <li>国际知名AI实验室和公司的最新动态</li>
+            <li>顶级学术会议论文和研究成果</li>
+            <li>开源项目更新和技术突破</li>
+            <li>行业趋势分析和市场洞察</li>
+        </ul>
+
+        <h3>🤖 AI问答</h3>
+        <p>基于先进大语言模型的智能问答系统：</p>
+        <ul>
+            <li>实时解答技术问题</li>
+            <li>提供学习指导和最佳实践</li>
+            <li>支持代码分析和优化建议</li>
+            <li>问答记录自动存档供社区参考</li>
+        </ul>
+
+        <h3>👥 技术社区</h3>
+        <p>活跃的AI技术交流社区：</p>
+        <ul>
+            <li>论坛讨论：分享经验、交流技术</li>
+            <li>问答互助：提问解答、互相学习</li>
+            <li>项目展示：展示作品、获取反馈</li>
+            <li>点赞收藏：发现优质内容</li>
+        </ul>
+
+        <h3>⭐ 积分等级</h3>
+        <p>完善的激励体系：</p>
+        <ul>
+            <li>发帖、评论、互动均可获得积分</li>
+            <li>积分累计提升会员等级</li>
+            <li>高等级用户享有更多特权</li>
+            <li>优质内容获得更多曝光</li>
+        </ul>
+
+        <h2>技术架构</h2>
+        <p>采用现代化技术栈构建：</p>
+        <ul>
+            <li>前端：Astro.js + Tailwind CSS</li>
+            <li>后端：Netlify Functions + Supabase</li>
+            <li>数据库：PostgreSQL (Supabase)</li>
+            <li>部署：Netlify Edge Network</li>
+        </ul>
+
+        <h2>开始使用</h2>
+        <p>立即<a href="/auth">注册账号</a>，加入我们的AI技术社区，与10K+专业人士一起探索AI的无限可能！</p>
+    </section>
 </Layout>
