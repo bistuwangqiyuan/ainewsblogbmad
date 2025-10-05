@@ -1,0 +1,45 @@
+# robots.txt for AI新闻博客平台
+# 允许所有搜索引擎抓取
+
+User-agent: *
+Allow: /
+
+# 禁止抓取的路径
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_astro/
+Disallow: /*/admin/
+Disallow: /*/api/
+
+# 搜索引擎特定规则
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+# 禁止恶意爬虫
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+# Sitemap位置
+Sitemap: https://ainewsblogbmad.netlify.app/sitemap-index.xml
+Sitemap: https://ainewsblogbmad.netlify.app/sitemap-0.xml
+
+# 爬取规则说明
+# - 允许所有主要搜索引擎抓取所有公开内容
+# - 保护API端点和管理后台
+# - 优先支持Google、Bing、百度等主流搜索引擎
+# - 提供sitemap便于搜索引擎发现新内容
