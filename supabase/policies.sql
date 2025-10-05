@@ -11,7 +11,12 @@ update using (auth.uid() = id) with check (auth.uid() = id);
 alter table public.news_items enable row level security;
 create policy news_read on public.news_items for
 select using (true);
--- no insert/update/delete policy for anon users (service key only)
+create policy news_insert on public.news_items for
+insert with check (true);
+create policy news_update on public.news_items for
+update using (true);
+create policy news_delete on public.news_items for
+delete using (true);
 -- posts
 alter table public.posts enable row level security;
 create policy posts_read on public.posts for
@@ -112,4 +117,5 @@ select using (true);
 alter table public.crawler_logs enable row level security;
 create policy crawler_logs_read on public.crawler_logs for
 select using (true);
--- inserts via function/service only
+create policy crawler_logs_insert on public.crawler_logs for
+insert with check (true);

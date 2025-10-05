@@ -1,0 +1,295 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const title = '帮助中心';
+const description = 'AI新闻博客帮助中心，解答常见问题和使用指南';
+---
+
+<Layout title={title} description={description}>
+    <div class="min-h-screen bg-gray-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- 页面标题 -->
+            <div class="text-center mb-12">
+                <h1 class="text-3xl font-bold text-white mb-4">帮助中心</h1>
+                <p class="text-gray-400 text-lg">在这里找到您需要的所有帮助信息</p>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="mb-8">
+                <div class="relative">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="搜索帮助内容..."
+                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速导航 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">📰</span>
+                        <h3 class="text-lg font-semibold text-white">新闻阅读</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">了解如何浏览和筛选AI新闻</p>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">👥</span>
+                        <h3 class="text-lg font-semibold text-white">社区交流</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">学习如何参与社区讨论和问答</p>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">🤖</span>
+                        <h3 class="text-lg font-semibold text-white">AI问答</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">使用AI助手获取编程帮助</p>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="space-y-6">
+                <h2 class="text-2xl font-bold text-white mb-6">常见问题</h2>
+
+                <!-- 新闻相关 -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <span class="text-xl mr-2">📰</span>
+                        新闻相关
+                    </h3>
+                    <div class="space-y-4">
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何筛选特定来源的新闻？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在新闻页面的筛选表单中，您可以在"来源"字段中输入来源名称，多个来源用逗号分隔。例如：OpenAI Blog, Google AI</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>新闻数据多久更新一次？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>我们的新闻采集系统每天凌晨2点自动运行，从各大AI技术博客和新闻源获取最新内容。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何收藏感兴趣的新闻？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在新闻详情页面，点击"收藏"按钮即可将新闻添加到您的收藏夹。您可以在个人中心的"收藏"页面查看所有收藏的内容。</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 社区相关 -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <span class="text-xl mr-2">👥</span>
+                        社区相关
+                    </h3>
+                    <div class="space-y-4">
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何发布帖子和提问？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>点击导航栏的"发帖/提问"按钮，选择发布类型（帖子或问题），填写标题和内容，然后点击发布即可。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何获得积分和提升等级？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>通过发布优质内容、回答问题、获得点赞等方式可以获得积分。积分达到一定数量后会自动提升等级。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何举报不当内容？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在内容详情页面，点击"举报"按钮，选择举报原因并提交。我们会及时处理您的举报。</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- AI问答相关 -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <span class="text-xl mr-2">🤖</span>
+                        AI问答相关
+                    </h3>
+                    <div class="space-y-4">
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何使用AI问答功能？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>访问"AI问答"页面，在输入框中描述您的编程问题或需求，AI助手会为您提供详细的解答和代码示例。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>AI问答支持哪些编程语言？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>我们的AI助手支持多种主流编程语言，包括JavaScript、Python、TypeScript、Java、C++、Go等。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何保存AI问答记录？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在AI问答页面，您可以点击"保存"按钮将对话记录保存到您的个人中心，方便以后查看。</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 账户相关 -->
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <span class="text-xl mr-2">👤</span>
+                        账户相关
+                    </h3>
+                    <div class="space-y-4">
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何注册和登录账户？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>点击导航栏的"登录"按钮，您可以使用邮箱注册新账户或登录现有账户。我们支持邮箱密码和第三方登录方式。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何修改个人信息？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在个人中心页面，您可以修改用户名、头像、个人简介等信息。点击"编辑"按钮进行修改。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="cursor-pointer text-white hover:text-blue-400 transition-colors flex items-center justify-between">
+                                <span>如何管理通知设置？</span>
+                                <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </summary>
+                            <div class="mt-3 pl-4 text-gray-400">
+                                <p>在通知中心页面，您可以设置接收哪些类型的通知，包括回复通知、点赞通知、系统通知等。</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系我们 -->
+            <div class="mt-12 bg-gray-800 rounded-lg p-6">
+                <h2 class="text-xl font-bold text-white mb-4">还需要帮助？</h2>
+                <p class="text-gray-400 mb-4">如果您没有找到答案，可以通过以下方式联系我们：</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/feedback" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                        <span class="mr-2">📝</span>
+                        提交反馈
+                    </a>
+                    <a href="/contact" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                        <span class="mr-2">📧</span>
+                        联系我们
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 搜索功能
+        const searchInput = document.getElementById('search-input');
+        const details = document.querySelectorAll('details');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            details.forEach((detail) => {
+                const summary = detail.querySelector('summary span');
+                const content = detail.querySelector('div');
+
+                if (summary.textContent.toLowerCase().includes(searchTerm) || content.textContent.toLowerCase().includes(searchTerm)) {
+                    detail.style.display = 'block';
+                    if (searchTerm) {
+                        detail.open = true;
+                    }
+                } else {
+                    detail.style.display = searchTerm ? 'none' : 'block';
+                }
+            });
+        });
+
+        // 点击快速导航卡片
+        document.querySelectorAll('.bg-gray-800.rounded-lg.p-6').forEach((card) => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('h3').textContent;
+                const searchInput = document.getElementById('search-input');
+                searchInput.value = title;
+                searchInput.dispatchEvent(new Event('input'));
+            });
+        });
+    </script>
+</Layout>

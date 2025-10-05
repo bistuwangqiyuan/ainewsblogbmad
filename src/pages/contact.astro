@@ -1,0 +1,232 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const title = '联系我们';
+const description = '联系AI新闻博客团队，获取帮助和支持';
+---
+
+<Layout title={title} description={description}>
+    <div class="min-h-screen bg-gray-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- 页面标题 -->
+            <div class="text-center mb-12">
+                <h1 class="text-3xl font-bold text-white mb-4">联系我们</h1>
+                <p class="text-gray-400 text-lg">我们很乐意听到您的声音，随时为您提供帮助</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- 联系表单 -->
+                <div class="bg-gray-800 rounded-lg p-8">
+                    <h2 class="text-2xl font-bold text-white mb-6">发送消息</h2>
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">姓名</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    required
+                                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="您的姓名"
+                                />
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">邮箱</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="your@email.com"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-300 mb-2">主题</label>
+                            <select
+                                id="subject"
+                                name="subject"
+                                required
+                                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">请选择主题</option>
+                                <option value="general">一般咨询</option>
+                                <option value="technical">技术支持</option>
+                                <option value="bug">问题反馈</option>
+                                <option value="feature">功能建议</option>
+                                <option value="partnership">合作洽谈</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-300 mb-2">消息内容</label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                rows="6"
+                                required
+                                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                placeholder="请详细描述您的问题或建议..."></textarea>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input
+                                type="checkbox"
+                                id="newsletter"
+                                name="newsletter"
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+                            />
+                            <label for="newsletter" class="ml-2 text-sm text-gray-300"> 订阅我们的新闻通讯，获取最新AI技术动态 </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+                        >
+                            发送消息
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="space-y-8">
+                    <!-- 快速联系 -->
+                    <div class="bg-gray-800 rounded-lg p-8">
+                        <h2 class="text-2xl font-bold text-white mb-6">快速联系</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">📧</span>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-white">邮箱</h3>
+                                    <p class="text-gray-400">support@ainewsblog.com</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">💬</span>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-white">在线客服</h3>
+                                    <p class="text-gray-400">工作日 9:00-18:00</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                                    <span class="text-xl">📱</span>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-white">微信</h3>
+                                    <p class="text-gray-400">扫描二维码添加</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 常见问题链接 -->
+                    <div class="bg-gray-800 rounded-lg p-8">
+                        <h2 class="text-2xl font-bold text-white mb-6">常见问题</h2>
+                        <div class="space-y-3">
+                            <a href="/help" class="block text-blue-400 hover:text-blue-300 transition-colors"> 📖 查看帮助中心 </a>
+                            <a href="/feedback" class="block text-blue-400 hover:text-blue-300 transition-colors"> 📝 提交反馈 </a>
+                            <a href="/terms" class="block text-blue-400 hover:text-blue-300 transition-colors"> 📄 服务条款 </a>
+                            <a href="/privacy" class="block text-blue-400 hover:text-blue-300 transition-colors"> 🔒 隐私政策 </a>
+                        </div>
+                    </div>
+
+                    <!-- 响应时间 -->
+                    <div class="bg-gray-800 rounded-lg p-8">
+                        <h2 class="text-2xl font-bold text-white mb-6">响应时间</h2>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">一般咨询</span>
+                                <span class="text-green-400">24小时内</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">技术支持</span>
+                                <span class="text-yellow-400">48小时内</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">紧急问题</span>
+                                <span class="text-red-400">4小时内</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 社交媒体 -->
+            <div class="mt-12 bg-gray-800 rounded-lg p-8">
+                <h2 class="text-2xl font-bold text-white mb-6 text-center">关注我们</h2>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                        <span class="text-xl">🐦</span>
+                    </a>
+                    <a href="#" class="flex items-center justify-center w-12 h-12 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                        <span class="text-xl">💬</span>
+                    </a>
+                    <a href="#" class="flex items-center justify-center w-12 h-12 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
+                        <span class="text-xl">📱</span>
+                    </a>
+                    <a href="#" class="flex items-center justify-center w-12 h-12 bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+                        <span class="text-xl">📺</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 表单提交处理
+        const contactForm = document.getElementById('contact-form');
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(contactForm);
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+
+            // 显示加载状态
+            submitButton.textContent = '发送中...';
+            submitButton.disabled = true;
+
+            try {
+                // 这里可以添加实际的表单提交逻辑
+                // 例如发送到Supabase或Netlify Functions
+
+                // 模拟提交延迟
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                // 显示成功消息
+                alert('消息已发送！我们会尽快回复您。');
+                contactForm.reset();
+            } catch (error) {
+                console.error('提交失败:', error);
+                alert('发送失败，请稍后重试。');
+            } finally {
+                // 恢复按钮状态
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        });
+
+        // 字符计数
+        const messageTextarea = document.getElementById('message');
+        messageTextarea.addEventListener('input', (e) => {
+            const maxLength = 1000;
+            const currentLength = e.target.value.length;
+
+            if (currentLength > maxLength) {
+                e.target.value = e.target.value.substring(0, maxLength);
+            }
+        });
+    </script>
+</Layout>
